@@ -36,9 +36,9 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     const auth = await this.authService.googleLogin(req, res);
     if (auth.msg !== 'No user from google') {
-      return res.redirect(`http://localhost:3000/dashboard/${auth.msg}/${auth.data}`)
+      return res.redirect(`${process.env.CLIENT}dashboard/${auth.msg}/${auth.data}`)
     }
-    return res.redirect(`http://localhost:3000/`)
+    return res.redirect(`${process.env.CLIENT}`)
   }
 
 
@@ -52,9 +52,9 @@ export class AuthController {
   async facebookLoginRedirect(@Req() req, @Res() res) {
     const auth = await this.authService.facebookLogin(req, res);
     if (auth.msg !== 'No user from google') {
-      return res.redirect(`http://localhost:3000/dashboard/${auth.msg}/${auth.data}`)
+      return res.redirect(`${process.env.CLIENT}dashboard/${auth.msg}/${auth.data}`)
     }
-    return res.redirect(`http://localhost:3000/`)
+    return res.redirect(`${process.env.CLIENT}`)
   }
 
   @Post('/forgot')
