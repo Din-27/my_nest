@@ -10,6 +10,7 @@ import { Invite } from './schemas/invites.schema';
 import { Kegiatan } from './schemas/kegiatan.schema';
 import { UtilityKegiatan } from './utility/kegiatan.utility';
 import axios from 'axios';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class KegiatansService extends UtilityKegiatan {
@@ -53,8 +54,8 @@ export class KegiatansService extends UtilityKegiatan {
         }
       }
 
-      const getId = await this.kegiatanModel.find()
       await this.kegiatanModel.create({
+        id_kegiatan: nanoid(10),
         id_kalender: '',
         eventId: '',
         nama_kegiatan: nama_kegiatan,
@@ -127,6 +128,7 @@ export class KegiatansService extends UtilityKegiatan {
     try {
       let result
       const { id_user } = this.decodedToken((token: string) => this.jwtService.decode(token), req)
+      console.log(id_kegiatan);
 
       const getKegiatanByUser = await this.kegiatanModel.find({
         id_kegiatan: id_kegiatan
@@ -148,13 +150,14 @@ export class KegiatansService extends UtilityKegiatan {
         }, { fullname: 1, _id: 0 })
         result = getName
       }
+      console.log(getKegiatanByUser);
 
       const data = this.handleStatusTime(getKegiatanByUser)[0]
       return {
         status: 200,
         data: {
           ...data,
-          id_user: getUser[0]?._id.toString(),
+          id_user: getUser[0]?.id_user,
           anggota: result,
           nama_owner: getOwner?.fullname
         }
@@ -199,7 +202,7 @@ export class KegiatansService extends UtilityKegiatan {
         status: 200,
         data: {
           ...data,
-          id_user: getUser[0]?._id.toString(),
+          id_user: getUser[0]?.id_user,
           anggota: result,
           nama_owner: getOwner?.fullname
         }
@@ -267,7 +270,7 @@ export class KegiatansService extends UtilityKegiatan {
   async tambahAnggotaSaya(req: { header: (arg0: string) => any; }, TambahAnggotaDto: TambahAnggotaDto) {
     try {
       const { id_user } = this.decodedToken((token: string) => this.jwtService.decode(token), req)
-      const { _id, user_invite } = TambahAnggotaDto
+      const { id_kegiatan, user_invite } = TambahAnggotaDto
       const getAnggota = await this.userModel.find({
         fullname: user_invite
       })
@@ -279,11 +282,11 @@ export class KegiatansService extends UtilityKegiatan {
         }
       }
 
-      const getAnggotaWithKegiatan = await this.kegiatanModel.find({ _id })
+      const getAnggotaWithKegiatan = await this.kegiatanModel.find({ id_kegiatan })
       const checkInvite = await this.inviteModel.find({
         $and: [
-          { id_user: getAnggota[0]._id.toString() },
-          { id_kegiatan: getAnggotaWithKegiatan[0]?._id.toString() }
+          { id_user: getAnggota[0].id_user },
+          { id_kegiatan: getAnggotaWithKegiatan[0]?.id_kegiatan }
         ]
       })
 
@@ -301,8 +304,8 @@ export class KegiatansService extends UtilityKegiatan {
         }
       }
       await this.inviteModel.create({
-        id_kegiatan: getAnggotaWithKegiatan[0]._id.toString(),
-        id_user: getAnggota[0]._id.toString(),
+        id_kegiatan: getAnggotaWithKegiatan[0].id_kegiatan,
+        id_user: getAnggota[0].id_user,
         id_kalender: '',
         eventId: '',
         owner: id_user,
@@ -460,7 +463,7 @@ export class KegiatansService extends UtilityKegiatan {
       const checkUser = await this.kegiatanModel.findById(_id)
       const checkUserAnggota = await this.inviteModel.find({
         $and: [
-          { id_kegiatan: checkUser._id.toString() },
+          { id_kegiatan: checkUser.id_kegiatan },
           { id_user: id_user }
         ]
       })

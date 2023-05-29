@@ -92,4 +92,10 @@ export class KegiatansController {
   async addToGoogleCalender(@Body() body: { _id: string, event: any, access: string }, @Req() req: any) {
     return await this.kegiatansService.addToGoogleCalender(body, req);
   }
+
+  @UseGuards(AuthGuard())
+  @Get('/check')
+  ForgotPassword() {
+    return { message: 'sukses' }
+  }
 }

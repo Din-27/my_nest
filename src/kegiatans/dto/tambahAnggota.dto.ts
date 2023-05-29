@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class TambahAnggotaDto {
     @IsNotEmpty()
     @IsString()
-    readonly _id: string;
+    readonly id_kegiatan: string;
 
     @IsNotEmpty()
     @IsString()

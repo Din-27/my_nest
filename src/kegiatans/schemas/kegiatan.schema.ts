@@ -7,6 +7,9 @@ import { Document } from 'mongoose';
 export class Kegiatan extends Document {
 
     @Prop()
+    id_kegiatan: string;
+
+    @Prop()
     id_kalender: string;
 
     @Prop()

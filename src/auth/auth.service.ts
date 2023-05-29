@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { GoogleAuthDto } from './dto/googleAuth.dto';
 import { google, Auth } from 'googleapis';
 import { ForgotDto } from './dto/forgot.dto';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class AuthService {
@@ -45,9 +46,8 @@ export class AuthService {
       }
       const salt = await bcrypt.genSalt(10)
       const hashedPassword = await bcrypt.hash(password, salt)
-      const getId = await this.userModel.find()
       await this.userModel.create({
-        id_user: getId.length + 1,
+        id_user: nanoid(10),
         email: email,
         fullname: fullname,
         password: hashedPassword,
@@ -83,7 +83,7 @@ export class AuthService {
         }
       }
 
-      const tokenJwt = this.jwtService.sign({ id_user: userLogin._id.toString() })
+      const tokenJwt = this.jwtService.sign({ id_user: userLogin.id_user })
 
       return {
         status: 200,
@@ -127,9 +127,8 @@ export class AuthService {
         }
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
-        const getId = await this.userModel.find()
         this.userModel.create({
-          id_user: getId.length + 1,
+          id_user: nanoid(10),
           email: email,
           fullname: fullname,
           password: hashedPassword,
@@ -142,7 +141,7 @@ export class AuthService {
           }
         }
 
-        const tokenJwt = this.jwtService.sign({ id_user: userLogin._id.toString() })
+        const tokenJwt = this.jwtService.sign({ id_user: userLogin.id_user })
         return {
           status: 200,
           data: {
@@ -162,7 +161,7 @@ export class AuthService {
         }
       }
 
-      const tokenJwt = this.jwtService.sign({ id_user: userLogin._id.toString() })
+      const tokenJwt = this.jwtService.sign({ id_user: userLogin.id_user })
       return {
         status: 200,
         data: {
@@ -209,7 +208,7 @@ export class AuthService {
     //   }
     // }
 
-    const tokenJwt = this.jwtService.sign({ id_user: userLogin._id.toString() })
+    const tokenJwt = this.jwtService.sign({ id_user: userLogin.id_user })
     // console.log(req.user);
 
     return {
@@ -226,7 +225,7 @@ export class AuthService {
       }
     }
     const userLogin = await this.userModel.findOne({ email: req.user.user.email })
-    const tokenJwt = this.jwtService.sign({ id_user: userLogin._id.toString() })
+    const tokenJwt = this.jwtService.sign({ id_user: userLogin.id_user })
 
     if (userLogin === null) {
       return {
